@@ -12,8 +12,8 @@ public class Auto14657_Red_UG extends Auto14657_Main_UG {
         moveToLaunchLineShoot (true, true);
         moveToTargetZone(true,false);
         collectAdditionlRings ();
-//        shootRings();
-//        collectFourthlRings();
+////        shootRings();
+////        collectFourthlRings();
         grabSecondWobble();
         shootAdditionalRings ();
         dropSecondWobble();

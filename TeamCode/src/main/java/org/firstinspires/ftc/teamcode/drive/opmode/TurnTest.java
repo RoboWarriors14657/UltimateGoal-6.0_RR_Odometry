@@ -15,7 +15,7 @@ public class TurnTest extends LinearOpMode {
 //    public static double ANGLE = 90; // deg
 //    public static double ANGLE = 180; // deg
 
-    public static double ANGLE = -15; // deg
+    public static double ANGLE = 90; // deg
 
     @Override
     public void runOpMode() throws InterruptedException {

@@ -336,29 +336,29 @@ public class Auto14657_Base_UG extends LinearOpMode {
         sleep(sleeptimeMiliSec);
     }
 
-    public void runServo_FlipDown (long sleeptimeMiliSec){
-
-        robot.flip.setPower(-1);
-        sleep(sleeptimeMiliSec);
-        if(sleeptimeMiliSec>0){
-            robot.flip.setPower(0);
-        }
-    }
-    public void runServo_FlipUp (long sleeptimeMiliSec){
-
-        robot.flip.setPower(1);
-        sleep(sleeptimeMiliSec);
-         if(sleeptimeMiliSec>0){
-             robot.flip.setPower(0);
-         }
-    }
-
-    public void runServo_FlipReset (long sleeptimeMiliSec){
-
-        robot.flip.setPower(0);
-        sleep(sleeptimeMiliSec);
-        //        robot.flip.setPower(0);
-    }
+//    public void runServo_FlipDown (long sleeptimeMiliSec){
+//
+//        robot.flip.setPower(-1);
+//        sleep(sleeptimeMiliSec);
+//        if(sleeptimeMiliSec>0){
+//            robot.flip.setPower(0);
+//        }
+//    }
+//    public void runServo_FlipUp (long sleeptimeMiliSec){
+//
+//        robot.flip.setPower(1);
+//        sleep(sleeptimeMiliSec);
+//         if(sleeptimeMiliSec>0){
+//             robot.flip.setPower(0);
+//         }
+//    }
+//
+//    public void runServo_FlipReset (long sleeptimeMiliSec){
+//
+//        robot.flip.setPower(0);
+//        sleep(sleeptimeMiliSec);
+//        //        robot.flip.setPower(0);
+//    }
 
 }
 
@@ -427,7 +427,7 @@ class CollectionThread extends Thread{
 
                 robot.collection.setPower(ratationSpeed);
                 robot.lift.setPower(-1);
-                robot.flip.setPower(0);
+//                robot.flip.setPower(0);
 
                 sleep(5);
 

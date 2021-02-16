@@ -52,7 +52,7 @@ public class DriveConstants {
 //    public static double GEAR_RATIO = 0.5; // output (wheel) speed / input (motor) speed
     public static double GEAR_RATIO = 1.058716; //1.0; // output (wheel) speed / input (motor) speed
 //    public static double TRACK_WIDTH = 15.8; // in
-    public static double TRACK_WIDTH = 16.1;//15.29; // in
+    public static double TRACK_WIDTH = 16.5;//15.29; // in
 //    public static double TRACK_WIDTH = 16.77; // in
 
     /*
@@ -103,11 +103,16 @@ public class DriveConstants {
 //    public static double MAX_ANG_VEL = Math.toRadians(157.84688032);
 //    public static double MAX_ANG_ACCEL = Math.toRadians(138.19991297468354);
 
-    public static double MAX_VEL = 71.4;
-    public static double MAX_ACCEL = 71.4;
-    //    public static double MAX_ANG_VEL = Math.toRadians(138.19991297468354);
-    public static double MAX_ANG_VEL = 5.2577458;
-    public static double MAX_ANG_ACCEL = 5.2577458;
+//    public static double MAX_VEL = 71.4;
+//    public static double MAX_ACCEL = 71.4;
+//    public static double MAX_ANG_VEL = 5.2577458;
+//    public static double MAX_ANG_ACCEL = 5.2577458;
+
+    public static double MAX_VEL = 50;
+    public static double MAX_ACCEL = 50;
+    public static double MAX_ANG_VEL = 4.25;
+    public static double MAX_ANG_ACCEL = 4.25;
+
 
 
 

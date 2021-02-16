@@ -66,7 +66,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 1.1980203; //1.12982;
+    public static double LATERAL_MULTIPLIER = 0.98904333;//1.1980203; //1.12982;
 //    public static double LATERAL_MULTIPLIER = 1;
 //    public static double LATERAL_MULTIPLIER = 1.39123;
 
@@ -179,6 +179,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         // TODO: if desired, use setLocalizer() to change the localization method
         // for instance, setLocalizer(new ThreeTrackingWheelLocalizer(...));
 //        setLocalizer(new StandardTrackingWheelLocalizer( hardwareMap));
+        setLocalizer(new TwoWheelTrackingLocalizer( hardwareMap, this));
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -405,5 +406,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
+//        return 0;
     }
 }

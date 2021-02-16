@@ -87,7 +87,7 @@ public class Hardware14657_UG {
     public Servo grab = null;
     public Servo trigger = null;
     public Servo grab2 = null;
-    public CRServo flip = null;
+//    public CRServo flip = null;
     public Servo wobble2 = null;
 
 
@@ -97,7 +97,7 @@ public class Hardware14657_UG {
     public float grab_closePos = 0.7f;
 
     public float grab2_openPos = 0.1f;
-    public float grab2_closePos = 0.6f;
+    public float grab2_closePos = 0.5f;//0.6f;
 
     public float wobble2_liftPos = 0f;
     public float wobble2_dropPos = 0.9f;
@@ -166,7 +166,7 @@ public class Hardware14657_UG {
         // Servo set up
         grab = ahwMap.get(Servo.class, "Grab");
         trigger = ahwMap.get(Servo.class, "Trigger");
-        flip = ahwMap.get(CRServo.class, "Flip");
+//        flip = ahwMap.get(CRServo.class, "Flip");
         grab2 = ahwMap.get(Servo.class, "Grab2");
         wobble2 = ahwMap.get(Servo.class, "Wobble2");
 
