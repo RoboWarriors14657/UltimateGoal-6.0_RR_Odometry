@@ -9,6 +9,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
 
 import org.firstinspires.ftc.teamcode.drive.DriveConstants;
+import org.firstinspires.ftc.teamcode.drive.advanced.PoseStorage;
 
 import java.util.Arrays;
 
@@ -35,6 +36,9 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
          * The init() method of the hardware class does all the work here
          */
         init(hardwareMap);
+
+        // reset PoseStorage.currentPose
+        PoseStorage.currentPose = new Pose2d();
 
         telemetry.addData(">", "Press Play to start");
         telemetry.update();
@@ -101,7 +105,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //                    .build();
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
 
-                    .lineToLinearHeading(new Pose2d(-56, 0, Math.toRadians(-25)))
+                    .lineToLinearHeading(new Pose2d(-55.5, 0, Math.toRadians(-25)))
                     .build();
 
 //            rotationSpeed = 0.95;
@@ -167,7 +171,8 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 
             } else if (starterStackNo == 4) {
                 traj2 = drive.trajectoryBuilder(traj1.end(), true)
-                        .lineToLinearHeading(new Pose2d(-114, 44, Math.toRadians(0)))
+//                        .lineToLinearHeading(new Pose2d(-114, 44, Math.toRadians(0)))
+                        .lineToLinearHeading(new Pose2d(-105, 40, Math.toRadians(-45)))
                         .addDisplacementMarker(10, () -> {
                             runServo_DropWobble2(0);
 //                            runServo_FlipDown(0);
@@ -289,28 +294,6 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 
     }
 
-    public void collectFourthlRings (){
-
-       if (starterStackNo == 4) {
-            traj3_4 = drive.trajectoryBuilder(traj3_3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-37.5, 15.5, Math.toRadians(0)),
-                            new MinVelocityConstraint(
-                                    Arrays.asList(
-                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                            new MecanumVelocityConstraint(70, DriveConstants.TRACK_WIDTH)
-                                    )
-                            ),
-                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                    )
-                    .build();
-            startCollectionThread(50, 1);
-            drive.followTrajectory(traj3_4);
-            sleep(200);
-            stopCollectionThread();
-        }
-
-    }
-
     public void grabSecondWobble (){
 
         if (starterStackNo == 0){
@@ -372,44 +355,10 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         drive.followTrajectory(traj4);
         runMotor_DropWobble(500);
 //        closeServo_Grab(400);
-        closeServo_Grab(500);
+        closeServo_Grab(300);
 
     }
 
-    public void shootRings (){
-
-        if (starterStackNo == 4) {
-            traj5 = drive.trajectoryBuilder(traj3_4.end(), false)
-                    //                    .lineToLinearHeading(new Pose2d(-60, 29, Math.toRadians(0)))
-                    .lineToLinearHeading(new Pose2d(-61.5, 20, Math.toRadians(-8.5)))
-                    .addDisplacementMarker(3, () -> {
-                        closeServo_Grab(0);
-                        runServo_TriggerOpen(0);
-                    })
-                    .build();
-
-            drive.followTrajectory(traj5);
-
-            //        // revert the collection
-
-            robot.shooter.setVelocity(-100);
-            robot.collection.setPower(-0.5);
-            //                sleep(150);
-            sleep(200);
-            robot.collection.setPower(0);
-            //                sleep(200);
-            sleep(150);
-
-            //        startShooterThread(2000, 0.95);
-            //        startCollectionThread(1500, 1);
-            startShooterThread(2000, Velocity_HighGoal);
-            startCollectionThread(1000, 1);
-            stopShooterThread();
-            stopCollectionThread();
-            traj3_3 = traj5;
-        }
-
-    }
 
     public void shootAdditionalRings (){
         if (starterStackNo == 0){
@@ -513,7 +462,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             openServo_Grab(400, false);
             runMotor_LiftWobble(200);
             traj7 = drive.trajectoryBuilder(traj6.end(), false)
-                    .lineToLinearHeading(new Pose2d(-86, 42, Math.toRadians(-180)))
+                    .lineToLinearHeading(new Pose2d(-86, 36, Math.toRadians(-180)))
                     .addDisplacementMarker(0, () -> {
                         runMotor_LiftWobble(0);
                     })

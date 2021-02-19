@@ -2,15 +2,13 @@ package org.firstinspires.ftc.teamcode.ftc14657;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
-import org.firstinspires.ftc.teamcode.drive.opmode.DriveVelocityPIDTuner;
+import org.firstinspires.ftc.teamcode.drive.advanced.PoseStorage;
 
 @TeleOp(name="TeleOp UG OnBot", group="Linear Opmode")
 public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
@@ -24,39 +22,78 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
     boolean was_dpad_right = false;
     double drive_power = 0.85;
     double turn_power = 0.5;
+    double shootingDrive_power = 0.3;
+    double shootingTurn_power = 0.2;
+
+    // The coordinates we want the bot to automatically go to when we press the A button
+    Pose2d targetAPose = new Pose2d(-58, 0, Math.toRadians(0));
 
 
-    enum Mode {
+    // The location we want the bot to automatically go to when we press the B button
+    Pose2d targetBPose = new Pose2d(-55, 35, Math.toRadians(0));
+
+    // The angle we want to align to when we press Y
+    double targetAngle = Math.toRadians(45);
+
+
+    enum Mode_driver2 {
         DRIVER_MODE,
         SHOOTING_MODE,
-        POWERSHOT_MODE
+        POWERSHOT_MODE,
+        AUTOMATIC_CONTROL
+    }
+
+    enum Mode_driver1 {
+        DRIVER_MODE_1,
+        SLOW_MODE_1,
+        AUTOMATIC_CONTROL_1
     }
 
     public void init(HardwareMap ahwMap) {
 //        robot.init(hardwareMap);
         robot.init(hardwareMap);
         drive = new SampleMecanumDrive(hardwareMap);
-
-
-
     }
+
     @Override
     public void runOpMode() throws InterruptedException{
         // set default mode
-        Mode mode = Mode.DRIVER_MODE;
+        Mode_driver2 mode = Mode_driver2.DRIVER_MODE;
+        Mode_driver1 mode_1 = Mode_driver1.DRIVER_MODE_1;
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         init(hardwareMap);
+
+        // Retrieve our pose from the PoseStorage.currentPose static field
+        // See AutoTransferPose.java for further details
+        drive.setPoseEstimate(PoseStorage.currentPose);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
         robot.shooter.setDirection(DcMotor.Direction.FORWARD);
         // run until the end of the match (driver presses STOP)
-        while (opModeIsActive()) {
 
-            telemetry.addData("mode", mode);
+        if (isStopRequested()) return;
+
+        while (opModeIsActive() && !isStopRequested()) {
+            // Update the drive class
+            drive.update();
+
+            // Read pose
+            Pose2d poseEstimate = drive.getPoseEstimate();
+//        while (opModeIsActive()) {
+
+            telemetry.addData("driver1 mode", mode_1);
+            telemetry.addData("driver2 mode", mode);
+
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("Velocity", robot.shooter.getVelocity());
+            telemetry.update();
+
 
             switch (mode)
             {
@@ -64,14 +101,19 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                     drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
                     if (gamepad2.a) {
-                        mode = Mode.SHOOTING_MODE;
+                        mode = Mode_driver2.SHOOTING_MODE;
+                        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         runtime.reset();
                     } else if (gamepad2.b) {
-                        mode = Mode.POWERSHOT_MODE;
+                        mode = Mode_driver2.POWERSHOT_MODE;
+                        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                         runtime.reset();
+                    } else if(gamepad2.y){
+                        // reset PoseStorage.currentPose
+                        PoseStorage.currentPose = new Pose2d();
                     }
 
-                    //Gamepad2 stuff
+                        //Gamepad2 stuff
 
                     if (gamepad2.right_trigger > 0.1) {
                         robot.lift.setPower(-gamepad2.right_trigger);
@@ -102,21 +144,13 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
 //                robot.trigger.setPosition(robot.trigger_closePos);
                         runServo_TriggerClose(0);
                     }
-                    //TODO: change to gamepad2.dpad_left and dpad_right
-//                    if (gamepad2.x) {
-//                        robot.flip.setPower(1);
-//                    }else if(gamepad2.y) {
-//                        robot.flip.setPower(-1);
-//                    }else{
-//                        robot.flip.setPower(0);
-//
-//                    }
+
 
                     break;
                 case SHOOTING_MODE:
                     if (gamepad2.x)
                     {
-                        mode = Mode.DRIVER_MODE;
+                        mode = Mode_driver2.DRIVER_MODE;
                         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     }
                     if (gamepad2.a)
@@ -169,7 +203,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                 case POWERSHOT_MODE:
                     if (gamepad2.x)
                     {
-                        mode = Mode.DRIVER_MODE;
+                        mode = Mode_driver2.DRIVER_MODE;
                         drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
                     }
                     if (gamepad2.b)
@@ -207,39 +241,25 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
 //                                sleep(300);
 //                                sleep(200);
                             }
-
                             if (gamepad2.dpad_left)
                             {
-                                if(!was_dpad_left) {
-                                    traj1 = drive.trajectoryBuilder(new Pose2d(), true)
-                                            .lineToLinearHeading(new Pose2d(0, 7, Math.toRadians(0)))
-                                            .build();
-                                    drive.followTrajectory(traj1);
-                                    was_dpad_left = true;
-                                } else {
-                                    traj1 = drive.trajectoryBuilder(traj1.end(), true)
-                                            .lineToLinearHeading(new Pose2d(0, 14, Math.toRadians(0)))
-                                            .build();
-                                    drive.followTrajectory(traj1);
-                                }
+                                Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
+                                        .strafeLeft(7)
+                                        .build();
 
+                                drive.followTrajectory(traj1);
+                                mode = Mode_driver2.AUTOMATIC_CONTROL;
+                            }
+                            else if (gamepad2.dpad_right)
+                            {
+                                Trajectory traj2 = drive.trajectoryBuilder(poseEstimate)
+                                        .strafeRight(7)
+                                        .build();
+
+                                drive.followTrajectory(traj2);
+                                mode = Mode_driver2.AUTOMATIC_CONTROL;
                             }
 
-//                            if (gamepad2.dpad_right)
-//                            {
-//                                if(!was_dpad_right) {
-//                                    traj2 = drive.trajectoryBuilder(new Pose2d(), true)
-//                                            .strafeRight(7)
-//                                            .build();
-//                                    drive.followTrajectory(traj2);
-//                                    was_dpad_right = true;
-//                                } else {
-//                                    traj2 = drive.trajectoryBuilder(traj2.end(), true)
-//                                            .strafeRight(7)
-//                                            .build();
-//                                    drive.followTrajectory(traj2);
-//                                }
-//                            }
 
                         }
 
@@ -253,57 +273,128 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                     }
                     break;
 
+                case AUTOMATIC_CONTROL:
+                    // If x is pressed, we break out of the automatic following
+//                    if (gamepad2.x) {
+////                        drive.cancelFollowing();
+//                        mode = Mode_driver2.DRIVER_MODE;
+//                    }
+
+                    // If drive finishes its task, cede control to the driver
+                    if (!drive.isBusy()) {
+                        mode = Mode_driver2.POWERSHOT_MODE;
+                    }
+                    break;
+
+
             }
 
-            drive.setWeightedDrivePower(
-                    new Pose2d(
-                            -gamepad1.left_stick_y * drive_power,
-                            -gamepad1.left_stick_x * drive_power,
-                            -gamepad1.right_stick_x * turn_power
-                    )
-            );
+            // Driver 1 mode
 
-            drive.update();
+            switch (mode_1)
+            {
+                case DRIVER_MODE_1:
+                    drive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
-            Pose2d poseEstimate = drive.getPoseEstimate();
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("Velocity", robot.shooter.getVelocity());
-            telemetry.update();
+                    drive.setWeightedDrivePower(
+                            new Pose2d(
+                                    -gamepad1.left_stick_y * drive_power,
+                                    -gamepad1.left_stick_x * drive_power,
+                                    -gamepad1.right_stick_x * turn_power
+                            )
+                    );
 
-            // this was copy and pasted
+//                    drive.update();
+
+                    if (gamepad1.a) {
+                        // If the A button is pressed on gamepad1, we generate a splineTo()
+                        // trajectory on the fly and follow it
+                        // We switch the state to AUTOMATIC_CONTROL
+
+                        Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
+                                .lineToLinearHeading(targetAPose)
+                                .build();
+
+                        drive.followTrajectoryAsync(traj1);
+
+                        mode_1 = Mode_driver1.AUTOMATIC_CONTROL_1;
+                    } else if (gamepad1.b) {
+                        // If the B button is pressed on gamepad1, we generate a lineTo()
+                        // trajectory on the fly and follow it
+                        // We switch the state to AUTOMATIC_CONTROL
+
+                        Trajectory traj1 = drive.trajectoryBuilder(poseEstimate)
+                                .lineToLinearHeading(targetBPose)
+                                .build();
+
+                        drive.followTrajectoryAsync(traj1);
+
+                        mode_1 = Mode_driver1.AUTOMATIC_CONTROL_1;
+                    } else if (gamepad1.y) {
+                            mode_1 = Mode_driver1.SLOW_MODE_1;
+                            runtime.reset();
+//                        // If Y is pressed, we turn the bot to the specified angle to reach
+//                        // targetAngle (by default, 45 degrees)
+//
+//                        drive.turnAsync(Angle.normDelta(targetAngle - poseEstimate.getHeading()));
+//
+//                        mode_1 = Mode_driver1.AUTOMATIC_CONTROL;
+                    }
+
+                    break;
+                case SLOW_MODE_1:
+                    if (gamepad1.x)
+                    {
+                        mode_1 = Mode_driver1.DRIVER_MODE_1;
+                        drive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+                    }
+
+                    drive.setWeightedDrivePower(
+                            new Pose2d(
+                                    -gamepad1.left_stick_y * shootingDrive_power,
+                                    -gamepad1.left_stick_x * shootingDrive_power,
+                                    -gamepad1.right_stick_x * shootingTurn_power
+                            )
+                    );
+
+//                    drive.update();
+                    break;
+                case AUTOMATIC_CONTROL_1:
+                    // If x is pressed, we break out of the automatic following
+                    if (gamepad1.x) {
+//                        drive.cancelFollowing();
+                        mode_1 = Mode_driver1.DRIVER_MODE_1;
+                    }
+
+                    // If drive finishes its task, cede control to the driver
+                    if (!drive.isBusy()) {
+                        mode_1 = Mode_driver1.DRIVER_MODE_1;
+                    }
+                    break;
+            }
 
             if (gamepad1.left_bumper) {
-//                robot.grab.setPosition(1);
                 openServo_Grab(0, false);
             } else if (gamepad1.right_bumper) {
                 closeServo_Grab(0);
-//                robot.grab.setPosition(0.4);
             }
             if (gamepad1.right_trigger > 0.1) {
                 robot.wobble.setPower(gamepad1.right_trigger);
-//                 runMotor_LiftWobble (0);
             } else if (gamepad1.left_trigger > 0.1) {
-//                 runMotor_DropWobble (0);
                 robot.wobble.setPower(-gamepad1.left_trigger);
             }else{
                 robot.wobble.setPower(0);
             }
             if(gamepad1.dpad_down){
-//                robot.wobble2.setPosition(0.87);
                 runServo_DropWobble2(0);
             }
             else if(gamepad1.dpad_up){
-//                robot.wobble2.setPosition(0);
                 runServo_LiftWobble2(0);
             }
             if(gamepad1.dpad_left){
-//                robot.grab2.setPosition(0);
                 openServo_Grab2(0);
             }
             else if(gamepad1.dpad_right){
-//                robot.grab2.setPosition(0.6);
                 closeServo_Grab2(0);
             }
 
@@ -312,50 +403,6 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
 //            }
 //            if (gamepad1.b){
 //                strafeRightPID_Encoder(1,24,5);
-//            }
-//            //Gamepad2 stuff
-//
-//            double FlipCollec;
-//            double ShooterPwr;
-//            if (gamepad2.right_trigger > 0.1) {
-//                robot.lift.setPower(-gamepad2.right_trigger);
-//                robot.collection.setPower(gamepad2.right_trigger);
-//            } else if (gamepad2.left_trigger > 0.1) {
-//                robot.lift.setPower(gamepad2.left_trigger);
-//                robot.collection.setPower(-gamepad2.left_trigger);
-//            } else {
-//                robot.lift.setPower(0);
-//                robot.collection.setPower(0);
-//
-//            }
-//
-//            double drive2 = -gamepad2.right_stick_y;
-//            if (gamepad2.left_bumper) {
-////                shooterPower    = Range.clip(drive2, -0.7, 0.7) ;
-//                shooterPower = Velocity_Powershot;
-//            } else if(gamepad2.right_bumper){
-//                // shooterPower    = Range.clip(drive2, -0.76, 0.76) ;
-////                shooterPower    = Range.clip(drive2, -0.95, 0.95) ;
-//                shooterPower = Velocity_HighGoal;
-//            } else {
-//                shooterPower = 0;
-//            }
-//            robot.shooter.setVelocity(shooterPower);
-//
-//            if (gamepad2.dpad_down) {
-////                robot.trigger.setPosition(robot.trigger_openPos);
-//                runServo_TriggerOpen(0);
-//            }else{
-////                robot.trigger.setPosition(robot.trigger_closePos);
-//                runServo_TriggerClose(0);
-//            }
-//            if (gamepad2.x) {
-//                robot.flip.setPower(1);
-//            }else if(gamepad2.y) {
-//                robot.flip.setPower(-1);
-//            }else{
-//                robot.flip.setPower(0);
-//
 //            }
 
         }

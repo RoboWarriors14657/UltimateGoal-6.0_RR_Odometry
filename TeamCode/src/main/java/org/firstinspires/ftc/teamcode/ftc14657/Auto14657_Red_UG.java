@@ -4,10 +4,11 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
+import org.firstinspires.ftc.teamcode.drive.advanced.PoseStorage;
+
 @Autonomous(name="Red-test rotation", group="OpMode")
 public class Auto14657_Red_UG extends Auto14657_Main_UG {
     public void runAutoActions(){
-
 
         moveToLaunchLineShoot (true, true);
         moveToTargetZone(true,false);
@@ -17,6 +18,9 @@ public class Auto14657_Red_UG extends Auto14657_Main_UG {
         grabSecondWobble();
         shootAdditionalRings ();
         dropSecondWobble();
+
+        // Transfer the current pose to PoseStorage so we can use it in TeleOp
+        PoseStorage.currentPose = drive.getPoseEstimate();
 
 //        traj6 = drive.trajectoryBuilder(new Pose2d(), false)
 //                    .lineToLinearHeading(new Pose2d(-52, 11, Math.toRadians(-180)))
