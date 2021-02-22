@@ -99,7 +99,7 @@ public class Hardware14657_UG {
     public float grab2_openPos = 0.1f;
     public float grab2_closePos = 0.5f;//0.6f;
 
-    public float wobble2_liftPos = 0f;
+    public float wobble2_liftPos = 0.35f;
     public float wobble2_dropPos = 0.9f;
     //
     //     public float push_TargetPos = 1f;

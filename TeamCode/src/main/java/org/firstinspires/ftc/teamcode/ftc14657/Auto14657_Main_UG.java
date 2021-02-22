@@ -105,7 +105,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //                    .build();
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
 
-                    .lineToLinearHeading(new Pose2d(-55.5, 0, Math.toRadians(-25)))
+                    .lineToLinearHeading(new Pose2d(-55, 0, Math.toRadians(-25)))
                     .build();
 
 //            rotationSpeed = 0.95;
@@ -376,6 +376,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                     .addDisplacementMarker(3, () -> {
                         closeServo_Grab(0);
                         runServo_TriggerOpen(0);
+                        runServo_LiftWobble2(0);
                     })
                     .build();
             drive.followTrajectory(traj5);
@@ -386,6 +387,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                     .addDisplacementMarker(3, () -> {
                         closeServo_Grab(0);
                         runServo_TriggerOpen(0);
+                        runServo_LiftWobble2(0);
                     })
                     .build();
 
@@ -462,7 +464,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             openServo_Grab(400, false);
             runMotor_LiftWobble(200);
             traj7 = drive.trajectoryBuilder(traj6.end(), false)
-                    .lineToLinearHeading(new Pose2d(-86, 36, Math.toRadians(-180)))
+                    .lineToLinearHeading(new Pose2d(-80, 36, Math.toRadians(-180)))
                     .addDisplacementMarker(0, () -> {
                         runMotor_LiftWobble(0);
                     })
