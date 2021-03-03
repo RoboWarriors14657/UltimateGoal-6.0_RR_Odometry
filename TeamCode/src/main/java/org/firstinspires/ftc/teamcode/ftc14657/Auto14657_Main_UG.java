@@ -63,12 +63,10 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         telemetry.addData(String.format("  starterStackNo: "), starterStackNo);
         telemetry.update();
         double rotationSpeed = 0;
+        double collectionSpeed = 0;
         if(isPowerShotFirst && starterStackNo != 4) {
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
-                    .lineToLinearHeading(new Pose2d(-61, 0, Math.toRadians(0)))
-                    .build();
-            traj1_2 = drive.trajectoryBuilder(traj1.end(), true)
-                    .lineToLinearHeading(new Pose2d(-61, 8, Math.toRadians(0)),
+                    .lineToLinearHeading(new Pose2d(-61, 1, Math.toRadians(0)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -78,12 +76,23 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                             new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
                     )
                     .build();
-            traj1_3 = drive.trajectoryBuilder(traj1_2.end(), true)
-                    .lineToLinearHeading(new Pose2d(-61, 16, Math.toRadians(0)),
+            traj1_2 = drive.trajectoryBuilder(traj1.end(), true)
+                    .lineToLinearHeading(new Pose2d(-61, 8, Math.toRadians(0)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                            new MecanumVelocityConstraint(38, DriveConstants.TRACK_WIDTH)
+                                            new MecanumVelocityConstraint(20, DriveConstants.TRACK_WIDTH)
+                                    )
+                            ),
+                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                    )
+                    .build();
+            traj1_3 = drive.trajectoryBuilder(traj1_2.end(), true)
+                    .lineToLinearHeading(new Pose2d(-61, 17, Math.toRadians(0)),
+                            new MinVelocityConstraint(
+                                    Arrays.asList(
+                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                            new MecanumVelocityConstraint(25, DriveConstants.TRACK_WIDTH)
                                     )
                             ),
                             new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -92,24 +101,14 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //            rotationSpeed = 0.80;
             rotationSpeed = Velocity_Powershot;
         } else {
-//            traj1 = drive.trajectoryBuilder(new Pose2d(), true)
-//                    .lineToLinearHeading(new Pose2d(-58, 0, Math.toRadians(-22)),
-//                            new MinVelocityConstraint(
-//                                    Arrays.asList(
-//                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-//                                            new MecanumVelocityConstraint(45, DriveConstants.TRACK_WIDTH)
-//                                    )
-//                            ),
-//                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                    )
-//                    .build();
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
 
-                    .lineToLinearHeading(new Pose2d(-55, 0, Math.toRadians(-25)))
+                    .lineToLinearHeading(new Pose2d(-55, 0, Math.toRadians(-23)))
                     .build();
 
 //            rotationSpeed = 0.95;
-            rotationSpeed = Velocity_HighGoal;
+            rotationSpeed = Velocity_HighGoal; //Velocity_HighGoal;
+
         }
         drive.followTrajectory(traj1);
 
@@ -121,13 +120,13 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                 robot.collection.setPower(0.5);
                 sleep(200);
                 robot.collection.setPower(0);
-                sleep(200);
+                sleep(1000);
 
                 drive.followTrajectory(traj1_2);
                 robot.collection.setPower(0.5);
-                sleep(550);
+                sleep(500);
                 robot.collection.setPower(0);
-                sleep(200);
+                sleep(1000);
 
                 drive.followTrajectory(traj1_3);
                 robot.collection.setPower(0.5);
@@ -141,10 +140,13 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             }
             stopShooterThread();
         } else {
+
             startShooterThread(2000, rotationSpeed);
             if (isRedAlliance) {
-
-                startCollectionThread(1500, 1);
+                telemetry.addData(String.format("  Voltage: "), batteryVoltageSensor.getVoltage());
+                telemetry.update();
+//                startCollectionThread(1500, getCollectionSpeed());
+                startCollectionThread(1500, Velocity_Collection);
 
             } else {
             }
@@ -161,7 +163,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         if(isRedAlliance) {
             if (starterStackNo == 1) {
                 traj2 = drive.trajectoryBuilder(traj1.end(), true)
-                        .lineToLinearHeading(new Pose2d(-90, 18, Math.toRadians(0)))
+                        .lineToLinearHeading(new Pose2d(-86, 19, Math.toRadians(0)))
                         .addDisplacementMarker(10, () -> {
                             runServo_DropWobble2(0);
 //                            runServo_FlipDown(0);
@@ -172,7 +174,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             } else if (starterStackNo == 4) {
                 traj2 = drive.trajectoryBuilder(traj1.end(), true)
 //                        .lineToLinearHeading(new Pose2d(-114, 44, Math.toRadians(0)))
-                        .lineToLinearHeading(new Pose2d(-105, 40, Math.toRadians(-45)))
+                        .lineToLinearHeading(new Pose2d(-105, 39, Math.toRadians(-45)))
                         .addDisplacementMarker(10, () -> {
                             runServo_DropWobble2(0);
 //                            runServo_FlipDown(0);
@@ -181,7 +183,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                         .build();
             } else {
                 traj2 = drive.trajectoryBuilder(traj1.end(), true)
-                        .lineToLinearHeading(new Pose2d(-68, 41, Math.toRadians(0)),
+                        .lineToLinearHeading(new Pose2d(-63, 39, Math.toRadians(-45)),
                                 new MinVelocityConstraint(
                                         Arrays.asList(
                                                 new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -212,7 +214,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 
         if (starterStackNo == 1) {
             traj3 = drive.trajectoryBuilder(traj2.end(), false)
-                    .lineToLinearHeading(new Pose2d(-47, 15, Math.toRadians(0)),
+                    .lineToLinearHeading(new Pose2d(-35, 18.5, Math.toRadians(0)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -222,49 +224,17 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                             new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
                     )
                     .build();
-            startCollectionThread(200, 1);
+            startCollectionThread(200, Velocity_Collection);
             drive.followTrajectory(traj3);
             sleep(1000);
             // stop the ShooterWheelThread.
             stopCollectionThread();
         } else if (starterStackNo == 4) {
 
-//            traj3 = drive.trajectoryBuilder(traj2.end(), false)
-//                    .lineToLinearHeading(new Pose2d(-78, 13, Math.toRadians(0)),
-//                            new MinVelocityConstraint(
-//                                    Arrays.asList(
-//                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-//                                            new MecanumVelocityConstraint(45, DriveConstants.TRACK_WIDTH)
-//                                    )
-//                            ),
-//                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                    )
-//                    .build();
-//            traj3_3 = drive.trajectoryBuilder(traj3.end(), false)
-//                    .lineToLinearHeading(new Pose2d(-48, 13, Math.toRadians(0)),
-//                            new MinVelocityConstraint(
-//                                    Arrays.asList(
-//                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-//                                            new MecanumVelocityConstraint(40, DriveConstants.TRACK_WIDTH)
-//                                    )
-//                            ),
-//                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                    )
-//                    .build();
             traj3 = drive.trajectoryBuilder(traj2.end(), false)
                     .lineToLinearHeading(new Pose2d(-78, 18.5, Math.toRadians(0)))
                     .build();
-//            traj3_3 = drive.trajectoryBuilder(traj3.end(), false)
-//                    .lineToLinearHeading(new Pose2d(-45, 18.5, Math.toRadians(0)),
-//                            new MinVelocityConstraint(
-//                                    Arrays.asList(
-//                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-//                                            new MecanumVelocityConstraint(70, DriveConstants.TRACK_WIDTH)
-//                                    )
-//                            ),
-//                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                    )
-//                    .build();
+
             traj3_3 = drive.trajectoryBuilder(traj3.end(), false)
                     .lineToLinearHeading(new Pose2d(-45, 18.5, Math.toRadians(0)))
                     .build();
@@ -273,7 +243,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             drive.followTrajectory(traj3_3);
 
             traj3_4 = drive.trajectoryBuilder(traj3_3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-33, 18.5, Math.toRadians(0)),
+                    .lineToLinearHeading(new Pose2d(-32, 18.5, Math.toRadians(0)),
                         new MinVelocityConstraint(
                         Arrays.asList(
                                 new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -283,7 +253,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                         new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
                     )
                     .build();
-            startCollectionThread(50, 1);
+            startCollectionThread(50, Velocity_Collection);
             drive.followTrajectory(traj3_4);
             sleep(1000);
             stopCollectionThread();
@@ -299,7 +269,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         if (starterStackNo == 0){
 
             traj4 = drive.trajectoryBuilder(traj3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-37, 30, Math.toRadians(0)),
+                    .lineToLinearHeading(new Pose2d(-30.5, 30, Math.toRadians(0)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -353,9 +323,9 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //            runServo_FlipUp(300);
 //        }
         drive.followTrajectory(traj4);
-        runMotor_DropWobble(500);
+        runMotor_DropWobble(400);
 //        closeServo_Grab(400);
-        closeServo_Grab(300);
+        closeServo_Grab(600);
 
     }
 
@@ -364,7 +334,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         if (starterStackNo == 0){
             traj5 = drive.trajectoryBuilder(traj4.end(), false)
 //                    .lineToLinearHeading(new Pose2d(-60, 0, Math.toRadians(0)))
-                    .splineToSplineHeading(new Pose2d(-82, 0, Math.toRadians(90)), Math.toRadians(0),
+                    .splineToSplineHeading(new Pose2d(-71, 0, Math.toRadians(90)), Math.toRadians(0),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -377,17 +347,19 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                         closeServo_Grab(0);
                         runServo_TriggerOpen(0);
                         runServo_LiftWobble2(0);
+                        robot.wobble.setPower(-0.4);
                     })
                     .build();
             drive.followTrajectory(traj5);
         } else {
             traj5 = drive.trajectoryBuilder(traj4.end(), false)
 //                    .lineToLinearHeading(new Pose2d(-60, 29, Math.toRadians(0)))
-                    .lineToLinearHeading(new Pose2d(-56.5, 25, Math.toRadians(-7.5)))
+                    .lineToLinearHeading(new Pose2d(-56, 25, Math.toRadians(-5.5)))
                     .addDisplacementMarker(3, () -> {
                         closeServo_Grab(0);
                         runServo_TriggerOpen(0);
                         runServo_LiftWobble2(0);
+                        robot.wobble.setPower(-0.4);
                     })
                     .build();
 
@@ -405,10 +377,14 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //                sleep(200);
                 sleep(150);
             }
-//        startShooterThread(2000, 0.95);
-//        startCollectionThread(1500, 1);
-            startShooterThread(2000, Velocity_HighGoal);
-            startCollectionThread(1500, 1);
+//            if(starterStackNo == 1)
+//            {
+//                startShooterThread(2000, Velocity_HighGoal-100);
+//            }
+//            else {
+                startShooterThread(2000, Velocity_HighGoal);
+//            }
+            startCollectionThread(1200, Velocity_Collection);
             stopCollectionThread();
             stopShooterThread();
         }
@@ -417,7 +393,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
     public void dropSecondWobble (){
         if (starterStackNo == 0){
             traj6 = drive.trajectoryBuilder(traj5.end(), false)
-                    .lineToLinearHeading(new Pose2d(-82, 20, Math.toRadians(90)),
+                    .lineToLinearHeading(new Pose2d(-71, 20, Math.toRadians(98)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
@@ -429,44 +405,57 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                     .build();
             drive.followTrajectory(traj6);
 
-//            openServo_Grab(400, true);
-//            runMotor_LiftWobble(700);
-//
-//            traj7 = drive.trajectoryBuilder(traj6.end(), false)
-//                    .lineToLinearHeading(new Pose2d(-82, 0, Math.toRadians(180)))
-//                    .build();
-//            drive.followTrajectory(traj7);
+            openServo_Grab(400, true);
+            runMotor_LiftWobble(700);
+
+            traj7 = drive.trajectoryBuilder(traj6.end(), false)
+                    .lineToLinearHeading(new Pose2d(-71, 25, Math.toRadians(98)))
+                    .build();
+            drive.followTrajectory(traj7);
 //            closeServo_Grab(500);
 //            runServo_FlipDown(1000);
 
         } else if(starterStackNo == 1){
             traj6 = drive.trajectoryBuilder(traj5.end(), false)
-                    .lineToLinearHeading(new Pose2d(-83, 15, Math.toRadians(180)))
+                    .lineToLinearHeading(new Pose2d(-76, 18, Math.toRadians(185)))
                     .build();
             drive.followTrajectory(traj6);
 
-//            openServo_Grab(400, true);
-//            runMotor_LiftWobble(700);
+            openServo_Grab(400, true);
+            runMotor_LiftWobble(700);
 
-//            traj7 = drive.trajectoryBuilder(traj6.end(), false)
-//                    .lineToLinearHeading(new Pose2d(-78, 0, Math.toRadians(180)))
-//                    .build();
-//            drive.followTrajectory(traj7);
+            traj7 = drive.trajectoryBuilder(traj6.end(), false)
+                    .lineToLinearHeading(new Pose2d(-81, 18, Math.toRadians(185)))
+                    .addDisplacementMarker(0, () -> {
+                        runMotor_LiftWobble(0);
+                        runServo_DropWobble2(0);
+                    })
+                    .build();
+            drive.followTrajectory(traj7);
 //            closeServo_Grab(500);
 
         }  else if(starterStackNo == 4) {
 
             traj6 = drive.trajectoryBuilder(traj5.end(), false)
-                    .lineToLinearHeading(new Pose2d(-105, 36, Math.toRadians(-180)))
+                    .lineToLinearHeading(new Pose2d(-105, 35, Math.toRadians(-170)))
                     .build();
             drive.followTrajectory(traj6);
 
             openServo_Grab(400, false);
             runMotor_LiftWobble(200);
             traj7 = drive.trajectoryBuilder(traj6.end(), false)
-                    .lineToLinearHeading(new Pose2d(-80, 36, Math.toRadians(-180)))
+                    .lineToLinearHeading(new Pose2d(-78, 35, Math.toRadians(-170)),
+                            new MinVelocityConstraint(
+                                    Arrays.asList(
+                                            new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                            new MecanumVelocityConstraint(75, DriveConstants.TRACK_WIDTH)
+                                    )
+                            ),
+                            new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                    )
                     .addDisplacementMarker(0, () -> {
                         runMotor_LiftWobble(0);
+                        runServo_DropWobble2(0);
                     })
                     .build();
             drive.followTrajectory(traj7);
@@ -508,6 +497,15 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             robot.collection.setPower(0);
             robot.lift.setPower(0);
         }
+    }
+
+    public double getCollectionSpeed (){
+        double collectionSpeed = 1;
+        if(batteryVoltageSensor.getVoltage() > fullPowerVoltage)
+        {
+            collectionSpeed = fullPowerVoltage/(batteryVoltageSensor.getVoltage());
+        }
+        return collectionSpeed;
     }
 
 

@@ -1,10 +1,8 @@
 package org.firstinspires.ftc.teamcode.ftc14657;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -47,7 +45,14 @@ public class Auto14657_Base_UG extends LinearOpMode {
     //    double adjTimeout = 0.2;
     int starterStackNo = 0;
     int Velocity_Powershot = 1600;
-    int Velocity_HighGoal = 2300;
+    int Velocity_HighGoal = 2300;//2300;
+
+    int Velocity_HighGoal_far = 2800;
+
+    int Velocity_Collection = 2000;
+
+    VoltageSensor batteryVoltageSensor;
+    double fullPowerVoltage = 12.95;
 
     public void init(HardwareMap ahwMap) {
 
@@ -65,6 +70,8 @@ public class Auto14657_Base_UG extends LinearOpMode {
         runServo_TriggerOpen(500);
         robot.shooter.setPower(0);
         robot.collection.setPower(0);
+
+        batteryVoltageSensor = hardwareMap.voltageSensor.iterator().next();
 
 
         // The TFObjectDetector uses the camera frames from the VuforiaLocalizer, so we create that
@@ -251,7 +258,7 @@ public class Auto14657_Base_UG extends LinearOpMode {
     public void closeServo_Grab (long sleeptimeMiliSec) {
 
 //        robot.grab.setPosition(0.4);
-        robot.grab.setPosition(0.3);
+        robot.grab.setPosition(0.2);
         sleep(sleeptimeMiliSec);
 
     }
@@ -260,7 +267,7 @@ public class Auto14657_Base_UG extends LinearOpMode {
 
 //        robot.grab.setPosition(1);
         if(fullOpen) {
-            robot.grab.setPosition(1);
+            robot.grab.setPosition(0.9);
 
         } else {
             robot.grab.setPosition(0.8);
@@ -386,7 +393,7 @@ class ShooterWheelThread extends Thread{
                 robot.shooter.setVelocity(rotationSpeed);
 //
 //                    robot.collection.setPower(1);
-                sleep(5);
+                sleep(1);
 
 
             }
@@ -407,10 +414,10 @@ class ShooterWheelThread extends Thread{
 
 class CollectionThread extends Thread{
     Hardware14657_UG robot   = null;
-    double ratationSpeed    = 0;
+    double rotationSpeed = 0;
     public CollectionThread(Hardware14657_UG robot, double ratationSpeed) {
         this.robot = robot;
-        this.ratationSpeed = ratationSpeed;
+        this.rotationSpeed = ratationSpeed;
         this.setName("CollectionThread");
         RobotLog.d("ULTIMATE_DEBUG - CollectionThread()" + this.getName());
     }
@@ -425,11 +432,12 @@ class CollectionThread extends Thread{
                 // we record the Y values in the main class to make showing them in telemetry
                 // easier.
 
-                robot.collection.setPower(ratationSpeed);
+//                robot.collection.setPower(ratationSpeed);
+                robot.collection.setVelocity(rotationSpeed);
                 robot.lift.setPower(-1);
 //                robot.flip.setPower(0);
 
-                sleep(5);
+                sleep(1);
 
 
             }

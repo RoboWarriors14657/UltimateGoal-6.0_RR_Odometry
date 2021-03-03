@@ -117,6 +117,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                         targetAPose = new Pose2d(0, -10.3, Math.toRadians(0));
 //                        targetBPose = new Pose2d(-7.28, -42.5, Math.toRadians(0));
                         targetBPose = new Pose2d(-4, -5, Math.toRadians(15));
+//                        targetBPose = new Pose2d(-6, -5, Math.toRadians(18));
                     }
 
                     if (gamepad2.right_trigger > 0.1) {
@@ -155,6 +156,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                     }
                     if (gamepad2.a)
                     {
+                        runServo_LiftWobble2(0);
                         int milisec_Revert = 200;
                         int milesec_MotorRotate = 2000 + milisec_Revert;
 //                        int milisec_Shooter = 1200 + milesec_MotorRotate;
@@ -175,6 +177,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                             robot.lift.setPower(0);
                             // turn on shooter high speed motor
                             robot.shooter.setVelocity(Velocity_HighGoal);
+                            //robot.shooter.setVelocity(2200); // 2000
                         }
                         else if (runtime.milliseconds() > milesec_MotorRotate )
                         {
@@ -183,9 +186,12 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                                 runServo_TriggerOpen(0);
                                 sleep(300);
 
-                                robot.collection.setPower(1);
+//                                robot.collection.setPower(1);
+                                robot.collection.setVelocity(Velocity_Collection);
                                 robot.lift.setPower(-1);
-
+                            } else {
+                                robot.collection.setPower(0);
+                                robot.lift.setPower(0);
                             }
                         }
                     } else {
@@ -209,6 +215,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
                     }
                     if (gamepad2.b)
                     {
+                        runServo_LiftWobble2(0);
                         int milisec_Revert = 200;
                         int milesec_MotorRotate = 2000 + milisec_Revert;
     //                        int milisec_Shooter = 1200 + milesec_MotorRotate;
@@ -298,7 +305,7 @@ public class TeleOp14657_MecanumWheel_UG extends  Auto14657_Base_UG {
 
                                     robot.collection.setPower(0.5);
                                     robot.lift.setPower(-0.5);
-                                    sleep(250);
+                                    sleep(500);
                                     robot.lift.setPower(0);
                                     robot.collection.setPower(0);
                                     sleep(200);

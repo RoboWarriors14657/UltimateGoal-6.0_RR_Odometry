@@ -78,7 +78,8 @@ public class Hardware14657_UG {
 //    public DcMotor shooter = null;
     public DcMotorEx shooter = null;
     public DcMotor wobble = null;
-    public DcMotor collection = null;
+//    public DcMotor collection = null;
+    public DcMotorEx collection = null;
     public DcMotor lift = null;
     // public DcMotor leftIntake = null;
     // public DcMotor LinearSlider = null;
@@ -128,7 +129,10 @@ public class Hardware14657_UG {
 //        fRight = ahwMap.dcMotor.get("FRightMotor");
 //        bLeft = ahwMap.dcMotor.get("BLeftMotor");
 //        bRight = ahwMap.dcMotor.get("BRightMotor");
-        collection  = ahwMap.dcMotor.get("Collection");
+//        collection  = ahwMap.dcMotor.get("Collection");
+
+        collection  = ahwMap.get(DcMotorEx.class, "Collection");
+        collection.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         wobble =ahwMap.dcMotor.get("WobbleGoal");
         lift = ahwMap.dcMotor.get("Lift");
 //        shooter =ahwMap.dcMotor.get("Shooter");

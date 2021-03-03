@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <LynxUsbDevice name="Expansion Hub Portal 1" serialNumber="DQ3LV1DP" parentModuleAddress="2">
+        <LynxModule name="Expansion Hub 2" port="2">
+            <goBILDA5202SeriesMotor name="Shooter" port="0" />
+            <goBILDA5202SeriesMotor name="WobbleGoal" port="1" />
+            <goBILDA5202SeriesMotor name="Collection" port="2" />
+            <RevRoboticsCoreHexMotor name="Lift" port="3" />
+            <ContinuousRotationServo name="Flip" port="1" />
+            <Servo name="Grab" port="2" />
+            <Servo name="Grab2" port="3" />
+            <Servo name="Wobble2" port="4" />
+            <Servo name="Trigger" port="5" />
+            <LynxEmbeddedIMU name="imu" port="0" bus="0" />
+        </LynxModule>
+        <LynxModule name="Expansion Hub 3" port="3">
+            <goBILDA5202SeriesMotor name="FLeftMotor" port="0" />
+            <goBILDA5202SeriesMotor name="FRightMotor" port="1" />
+            <goBILDA5202SeriesMotor name="BLeftMotor" port="2" />
+            <goBILDA5202SeriesMotor name="BRightMotor" port="3" />
+            <LynxEmbeddedIMU name="imu 1" port="0" bus="0" />
+        </LynxModule>
+    </LynxUsbDevice>
+</Robot>
