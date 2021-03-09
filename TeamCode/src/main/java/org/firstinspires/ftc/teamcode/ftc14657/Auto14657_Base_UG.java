@@ -50,6 +50,7 @@ public class Auto14657_Base_UG extends LinearOpMode {
     int Velocity_HighGoal_far = 2800;
 
     int Velocity_Collection = 2000;
+    int Velocity_Collection_Powershot = 1200;
 
     VoltageSensor batteryVoltageSensor;
     double fullPowerVoltage = 12.95;
@@ -258,7 +259,7 @@ public class Auto14657_Base_UG extends LinearOpMode {
     public void closeServo_Grab (long sleeptimeMiliSec) {
 
 //        robot.grab.setPosition(0.4);
-        robot.grab.setPosition(0.2);
+        robot.grab.setPosition(0);
         sleep(sleeptimeMiliSec);
 
     }
