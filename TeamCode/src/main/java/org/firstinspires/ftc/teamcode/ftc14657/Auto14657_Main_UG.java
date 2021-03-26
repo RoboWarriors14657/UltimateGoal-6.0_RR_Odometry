@@ -31,6 +31,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
     Trajectory traj7; // from the drop zone to park on the launch line
 
     Pose2d newLastPose;
+    double rotationSpeed = 0;
 
     public void runOpMode() throws InterruptedException{
         /*
@@ -64,9 +65,12 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 
         telemetry.addData(String.format("  starterStackNo: "), starterStackNo);
         telemetry.update();
-        double rotationSpeed = 0;
+
         double collectionSpeed = 0;
-        if(isPowerShotFirst && starterStackNo != 4) {
+//        if(isPowerShotFirst && starterStackNo != 4) {
+        if(isPowerShotFirst) {
+
+            rotationSpeed = Velocity_Powershot;
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
                     .lineToLinearHeading(new Pose2d(-61, 1, Math.toRadians(0)),
                             new MinVelocityConstraint(
@@ -77,6 +81,9 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                             ),
                             new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
                     )
+//                    .addDisplacementMarker(45, () -> {
+//                        startShooterThread(0, Velocity_Powershot);
+//                    })
                     .build();
 //            traj1_2 = drive.trajectoryBuilder(traj1.end(), true)
 //                    .lineToLinearHeading(new Pose2d(-61, 9, Math.toRadians(0)),
@@ -101,7 +108,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 //                    )
 //                    .build();
 
-            rotationSpeed = Velocity_Powershot;
+//            rotationSpeed = Velocity_Powershot;
         } else {
             traj1 = drive.trajectoryBuilder(new Pose2d(), true)
 
@@ -115,43 +122,39 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         drive.followTrajectory(traj1);
 
         //
-        if(isPowerShotFirst &&  starterStackNo != 4) {
+//        if(isPowerShotFirst &&  starterStackNo != 4) {
+        if(isPowerShotFirst ) {
             startShooterThread(2000, rotationSpeed);
             if (isRedAlliance) {
-
-                robot.collection.setPower(0.5);
-                sleep(200);
-                robot.collection.setPower(0);
-                sleep(1000);
+                if(!drive.isBusy()) {
+//                    sleep(500);
+                    robot.collection.setPower(0.5);
+                    sleep(200);
+                    robot.collection.setPower(0);
+                    if(starterStackNo != 4) {
+                        sleep(1000);
+                    }
+                }
 
 //                drive.followTrajectory(traj1_2);
                 drive.turn(Math.toRadians(-4));
-                robot.collection.setPower(0.5);
-                sleep(700);
-                robot.collection.setPower(0);
-                sleep(1000);
-
-//                drive.update();
-//                // Read pose
-//                Pose2d newLastPose = drive.getPoseEstimate();
-//                traj1_3 = drive.trajectoryBuilder(newLastPose, true)
-//                        .lineToLinearHeading(new Pose2d(-61, 14.5, Math.toRadians(0)),
-//                                new MinVelocityConstraint(
-//                                        Arrays.asList(
-//                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-//                                                new MecanumVelocityConstraint(25, DriveConstants.TRACK_WIDTH)
-//                                        )
-//                                ),
-//                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-//                        )
-//                        .build();
-
+                if(!drive.isBusy()) {
+                    robot.collection.setPower(0.5);
+//                sleep(700);
+                    sleep(400);
+                    robot.collection.setPower(0);
+                    if(starterStackNo != 4) {
+                        sleep(1000);
+                    }
+                }
 
 //                drive.followTrajectory(traj1_3);
                 drive.turn(Math.toRadians(-8));
-                robot.collection.setPower(0.5);
-                sleep(1000);
-                robot.collection.setPower(0);
+                if(!drive.isBusy()) {
+                    robot.collection.setPower(0.5);
+                    sleep(1000);
+                    robot.collection.setPower(0);
+                }
 
                 traj1 = traj1_3;
 //                newLastPose = traj1.end().plus(new Pose2d(-61, 1, Math.toRadians(-10)));
@@ -163,10 +166,11 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             stopShooterThread();
         } else {
 
+//            startShooterThread(2000, rotationSpeed);
             startShooterThread(2000, rotationSpeed);
             if (isRedAlliance) {
-                telemetry.addData(String.format("  Voltage: "), batteryVoltageSensor.getVoltage());
-                telemetry.update();
+//                telemetry.addData(String.format("  Voltage: "), batteryVoltageSensor.getVoltage());
+//                telemetry.update();
 //                startCollectionThread(1500, getCollectionSpeed());
                 startCollectionThread(1200, Velocity_Collection);
 
@@ -238,7 +242,7 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
 
     }
 
-    public void collectAdditionlRings (){
+    public void collectAdditionlRings (boolean foruRings){
 
         if (starterStackNo == 1) {
             traj3 = drive.trajectoryBuilder(traj2.end(), false)
@@ -258,33 +262,74 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
             // stop the ShooterWheelThread.
             stopCollectionThread();
         } else if (starterStackNo == 4) {
+            if(foruRings){
 
-            traj3 = drive.trajectoryBuilder(traj2.end(), false)
-                    .lineToLinearHeading(new Pose2d(-78, 18, Math.toRadians(0)))
-                    .build();
-
-            traj3_3 = drive.trajectoryBuilder(traj3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-45, 18, Math.toRadians(0)))
-                    .build();
-
-            drive.followTrajectory(traj3);
-            drive.followTrajectory(traj3_3);
-
-            traj3_4 = drive.trajectoryBuilder(traj3_3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-32, 18, Math.toRadians(0)),
-                        new MinVelocityConstraint(
-                        Arrays.asList(
-                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                new MecanumVelocityConstraint(5, DriveConstants.TRACK_WIDTH)
+                traj3_3 = drive.trajectoryBuilder(traj2.end(), false)
+                        .lineToLinearHeading(new Pose2d(-50, 18, Math.toRadians(-10)),
+                                new MinVelocityConstraint(
+                                        Arrays.asList(
+                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                new MecanumVelocityConstraint(38, DriveConstants.TRACK_WIDTH)
+                                        )
+                                ),
+                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
                         )
-                        ),
-                        new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
-                    )
-                    .build();
-            startCollectionThread(50, Velocity_Collection);
-            drive.followTrajectory(traj3_4);
-            sleep(1000);
-            stopCollectionThread();
+                        .addDisplacementMarker(25, () -> {
+                            startShooterThread(0, Velocity_HighGoal_middle);
+                            startCollectionThread(0, Velocity_Collection);
+                            runServo_TriggerOpen(0);
+                         })
+                        .build();
+                drive.followTrajectory(traj3_3);
+                sleep(1000);
+                runServo_TriggerClose(300);
+
+                stopShooterThread();
+
+                traj3_4 = drive.trajectoryBuilder(traj3_3.end(), false)
+                        .lineToLinearHeading(new Pose2d(-31, 18, Math.toRadians(0)),
+                                new MinVelocityConstraint(
+                                        Arrays.asList(
+                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                new MecanumVelocityConstraint(15, DriveConstants.TRACK_WIDTH)
+                                        )
+                                ),
+                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        )
+                        .build();
+
+                drive.followTrajectory(traj3_4);
+//                sleep(1000);
+                stopCollectionThread();
+
+            } else {
+                traj3 = drive.trajectoryBuilder(traj2.end(), false)
+                        .lineToLinearHeading(new Pose2d(-78, 18, Math.toRadians(0)))
+                        .build();
+
+                traj3_3 = drive.trajectoryBuilder(traj3.end(), false)
+                        .lineToLinearHeading(new Pose2d(-45, 18, Math.toRadians(0)))
+                        .build();
+
+                drive.followTrajectory(traj3);
+                drive.followTrajectory(traj3_3);
+
+                traj3_4 = drive.trajectoryBuilder(traj3_3.end(), false)
+                        .lineToLinearHeading(new Pose2d(-31, 18, Math.toRadians(0)),
+                                new MinVelocityConstraint(
+                                        Arrays.asList(
+                                                new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
+                                                new MecanumVelocityConstraint(5, DriveConstants.TRACK_WIDTH)
+                                        )
+                                ),
+                                new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
+                        )
+                        .build();
+                startCollectionThread(50, Velocity_Collection);
+                drive.followTrajectory(traj3_4);
+                sleep(1000);
+                stopCollectionThread();
+            }
         } else {
             // target zone 1 starterStackNo == 0
             traj3 = traj2;
@@ -297,11 +342,11 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         if (starterStackNo == 0){
 
             traj4 = drive.trajectoryBuilder(traj3.end(), false)
-                    .lineToLinearHeading(new Pose2d(-30.5, 30, Math.toRadians(0)),
+                    .lineToLinearHeading(new Pose2d(-31, 30, Math.toRadians(0)),
                             new MinVelocityConstraint(
                                     Arrays.asList(
                                             new AngularVelocityConstraint(DriveConstants.MAX_ANG_VEL),
-                                            new MecanumVelocityConstraint(38, DriveConstants.TRACK_WIDTH)
+                                            new MecanumVelocityConstraint(25, DriveConstants.TRACK_WIDTH)
                                     )
                             ),
                             new ProfileAccelerationConstraint(DriveConstants.MAX_ACCEL)
@@ -405,7 +450,8 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
                 sleep(150);
             }
 
-            startShooterThread(2000, Velocity_HighGoal);
+//            startShooterThread(2000, Velocity_HighGoal);
+            startShooterThread(1500, Velocity_HighGoal);
             startCollectionThread(1200, Velocity_Collection);
             stopCollectionThread();
             stopShooterThread();
@@ -490,8 +536,14 @@ public class Auto14657_Main_UG extends Auto14657_Base_UG {
         ShooterWheelThread = new ShooterWheelThread(robot, rotationSpeed);
 
         if( opModeIsActive()) {
+            runtime.reset();
             ShooterWheelThread.start();
-            sleep(runtimeMiliSec);
+//            sleep(runtimeMiliSec);
+            while (runtime.milliseconds() <= runtimeMiliSec){
+                if(robot.shooter.getVelocity() >= rotationSpeed ){
+                    break;
+                }
+            }
             idle();
         }
     }

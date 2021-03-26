@@ -12,7 +12,7 @@ public class Auto14657_Red_HighGoal extends Auto14657_Main_UG {
 
         moveToLaunchLineShoot (true, false);
         moveToTargetZone(true,false);
-        collectAdditionlRings ();
+        collectAdditionlRings (false);
         grabSecondWobble();
         shootAdditionalRings ();
         dropSecondWobble();

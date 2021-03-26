@@ -45,7 +45,10 @@ public class Auto14657_Base_UG extends LinearOpMode {
     //    double adjTimeout = 0.2;
     int starterStackNo = 0;
     int Velocity_Powershot = 1600;
-    int Velocity_HighGoal = 2300;//2300;
+    int Velocity_HighGoal = 2300;
+    int Velocity_HighGoal_middle = 1900;
+//    int Velocity_Powershot = 3400;
+//    int Velocity_HighGoal = 4900;
 
     int Velocity_HighGoal_far = 2800;
 
@@ -391,9 +394,9 @@ class ShooterWheelThread extends Thread{
                 // easier.
 
 //                robot.shooter.setPower(rotationSpeed);
-                robot.shooter.setVelocity(rotationSpeed);
-//
-//                    robot.collection.setPower(1);
+//                robot.shooter.setVelocity(rotationSpeed);
+                robot.setVelocity(robot.shooter, rotationSpeed);
+
                 sleep(1);
 
 

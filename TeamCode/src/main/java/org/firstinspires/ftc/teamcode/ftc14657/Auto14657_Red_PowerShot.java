@@ -12,7 +12,7 @@ public class Auto14657_Red_PowerShot extends Auto14657_Main_UG {
 
         moveToLaunchLineShoot (true, true);
         moveToTargetZone(true,false);
-        collectAdditionlRings ();
+        collectAdditionlRings (true);
         grabSecondWobble();
         shootAdditionalRings ();
         dropSecondWobble();

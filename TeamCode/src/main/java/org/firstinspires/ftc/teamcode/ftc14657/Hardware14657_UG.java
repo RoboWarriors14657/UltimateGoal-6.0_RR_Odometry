@@ -29,6 +29,9 @@ package org.firstinspires.ftc.teamcode.ftc14657;
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import android.util.Log;
+
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
@@ -36,7 +39,10 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
+import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 
@@ -114,6 +120,20 @@ public class Hardware14657_UG {
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
 
+
+    public static double MOTOR_TICKS_PER_REV = 28;
+    public static double MOTOR_MAX_RPM = 5400;
+    public static double MOTOR_GEAR_RATIO = 1; // output (wheel) speed / input (motor) speed
+//    public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(50, 2, 2, 15);
+public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(150, 20, 20, 15);
+
+    private double lastKp = 0.0;
+    private double lastKi = 0.0;
+    private double lastKd = 0.0;
+    private double lastKf = getMotorVelocityF();
+
+    private VoltageSensor batteryVoltageSensor;
+
     /* Constructor */
     public Hardware14657_UG(){
 
@@ -138,6 +158,15 @@ public class Hardware14657_UG {
 //        shooter =ahwMap.dcMotor.get("Shooter");
         shooter = ahwMap.get(DcMotorEx.class, "Shooter");
         shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        MotorConfigurationType motorConfigurationType = shooter.getMotorType().clone();
+        motorConfigurationType.setAchieveableMaxRPMFraction(1.0);
+        shooter.setMotorType(motorConfigurationType);
+
+
+        batteryVoltageSensor = hwMap.voltageSensor.iterator().next();
+        setPIDFCoefficients(shooter, MOTOR_VELO_PID);
 
 //
 //        fLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -174,6 +203,32 @@ public class Hardware14657_UG {
         grab2 = ahwMap.get(Servo.class, "Grab2");
         wobble2 = ahwMap.get(Servo.class, "Wobble2");
 
+    }
+
+    public void setVelocity(DcMotorEx motor, double power) {
+
+//        motor.setVelocity(rpmToTicksPerSecond(power));
+        motor.setVelocity(power);
+        Log.i("mode", "setting velocity");
+
+    }
+
+    public void setPIDFCoefficients(DcMotorEx motor, PIDFCoefficients coefficients) {
+
+        motor.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, new PIDFCoefficients(
+                coefficients.p, coefficients.i, coefficients.d, coefficients.f * 12 / batteryVoltageSensor.getVoltage()
+        ));
+
+    }
+
+    public static double rpmToTicksPerSecond(double rpm) {
+        return rpm * MOTOR_TICKS_PER_REV / MOTOR_GEAR_RATIO / 60;
+    }
+
+
+    public static double getMotorVelocityF() {
+        // see https://docs.google.com/document/d/1tyWrXDfMidwYyP_5H4mZyVgaEswhOC35gvdmP-V-5hA/edit#heading=h.61g9ixenznbx
+        return 32767 * 60.0 / (MOTOR_MAX_RPM * MOTOR_TICKS_PER_REV);
     }
 
 
