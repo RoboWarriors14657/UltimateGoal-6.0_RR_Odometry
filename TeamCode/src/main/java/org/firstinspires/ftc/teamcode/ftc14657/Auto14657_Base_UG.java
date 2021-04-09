@@ -44,7 +44,8 @@ public class Auto14657_Base_UG extends LinearOpMode {
 
     //    double adjTimeout = 0.2;
     int starterStackNo = 0;
-    int Velocity_Powershot = 1600;
+//    int Velocity_Powershot = 1600;
+    int Velocity_Powershot = 1550;
     int Velocity_HighGoal = 2300;
     int Velocity_HighGoal_middle = 1900;
 //    int Velocity_Powershot = 3400;
