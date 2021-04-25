@@ -46,14 +46,17 @@ public class Auto14657_Base_UG extends LinearOpMode {
     int starterStackNo = 0;
 //    int Velocity_Powershot = 1600;
     int Velocity_Powershot = 1550;
-    int Velocity_HighGoal = 2300;
-    int Velocity_HighGoal_middle = 1900;
+//    int Velocity_HighGoal = 2300;
+    int Velocity_HighGoal = 2400;
+//    int Velocity_HighGoal_middle = 1900;
+    int Velocity_HighGoal_middle = 2400;
 //    int Velocity_Powershot = 3400;
 //    int Velocity_HighGoal = 4900;
 
     int Velocity_HighGoal_far = 2800;
 
-    int Velocity_Collection = 2000;
+//    int Velocity_Collection = 2000;
+    int Velocity_Collection = 2200;
     int Velocity_Collection_Powershot = 1200;
 
     VoltageSensor batteryVoltageSensor;
@@ -311,7 +314,8 @@ public class Auto14657_Base_UG extends LinearOpMode {
     public void runMotor_DropWobble (long sleeptimeMiliSec) {
 
         // robot.wobble.setPower(0.5);
-        robot.wobble.setPower(0.75);
+//        robot.wobble.setPower(0.75);
+        robot.wobble.setPower(0.65);
         sleep(sleeptimeMiliSec);
         robot.wobble.setPower(0);
     }

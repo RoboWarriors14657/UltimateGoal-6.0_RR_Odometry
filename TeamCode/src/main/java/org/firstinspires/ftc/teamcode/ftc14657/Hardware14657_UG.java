@@ -94,9 +94,11 @@ public class Hardware14657_UG {
     public Servo grab = null;
     public Servo trigger = null;
     public Servo grab2 = null;
+
 //    public CRServo flip = null;
     public Servo wobble2 = null;
-
+    public Servo leftWing = null;
+    public Servo rightWing = null;
 
 
     // servo move positions
@@ -114,6 +116,8 @@ public class Hardware14657_UG {
 
     public float trigger_closePos = 0f;
     public float trigger_openPos = 0.5f;
+
+
 
 
     /* local OpMode members. */
@@ -202,6 +206,8 @@ public static PIDFCoefficients MOTOR_VELO_PID = new PIDFCoefficients(150, 20, 20
 //        flip = ahwMap.get(CRServo.class, "Flip");
         grab2 = ahwMap.get(Servo.class, "Grab2");
         wobble2 = ahwMap.get(Servo.class, "Wobble2");
+        leftWing = ahwMap.get(Servo.class, "LeftWing");
+        rightWing = ahwMap.get(Servo.class, "RightWing");
 
     }
 
